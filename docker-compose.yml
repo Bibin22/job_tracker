@@ -3,11 +3,13 @@ services:
   web:
     build: .
     container_name: job_tracker_web
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 2
     ports:
       - "8000:8000"
     env_file:
       - .env
+    volumes:
+      - .:/app
     depends_on:
       - db
 
@@ -18,8 +20,6 @@ services:
       POSTGRES_DB: job_tracker
       POSTGRES_USER: job_tracker
       POSTGRES_PASSWORD: job_tracker_password
-    ports:
-      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
